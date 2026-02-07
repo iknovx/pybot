@@ -1,14 +1,21 @@
 import discord
 from discord.ext import commands
-import os
+from config import TOKEN, PREFIX, INTENTS
 
-token = os.getenv("Token")
+bot = commands.Bot(
+    command_prefix=PREFIX,
+    intents=INTENTS,
+    help_command=None
+)
 
-intents = discord.Intents.default()
-intents.message_content = True
+# --------- LOAD COGS ---------
+async def load_extensions():
+    await bot.load_extension("cogs.basic")
+    await bot.load_extension("events.ready")
 
-bot = commands.Bot(command_prefix="!", intents=intents)
+@bot.event
+async def setup_hook():
+    await load_extensions()
 
-@bot.slash_command()
-async def hello(ctx):
-    await ctx.send("Hello!")
+# --------- RUN ---------
+bot.run(TOKEN)
